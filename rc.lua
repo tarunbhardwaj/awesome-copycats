@@ -1,8 +1,9 @@
 --[[
-                                      
-     Multicolor Awesome WM config 2.0 
-     github.com/copycat-killer        
-                                      
+
+     Multicolor Awesome WM config 2.0
+     github.com/copycat-killer
+
+     myconfig
 --]]
 
 -- {{{ Required libraries
@@ -48,8 +49,6 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-run_once("urxvtd")
-run_once("unclutter")
 -- }}}
 
 -- {{{ Variable definitions
@@ -62,13 +61,12 @@ beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/multicolor/theme.lu
 -- common
 modkey     = "Mod4"
 altkey     = "Mod1"
-terminal   = "urxvtc" or "xterm"
-editor     = os.getenv("EDITOR") or "nano" or "vi"
+terminal   = "gnome-terminal" or "xterm"
+editor     = os.getenv("EDITOR") or "vim" or "vi"
 editor_cmd = terminal .. " -e " .. editor
 
 -- user defined
-browser    = "dwb"
-browser2   = "iron"
+browser    = "google-chrome"
 gui_editor = "gvim"
 graphics   = "gimp"
 mail       = terminal .. " -e mutt "
@@ -81,9 +79,9 @@ local layouts = {
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
+    --awful.layout.suit.spiral,
+    --awful.layout.suit.spiral.dwindle,
+    --awful.layout.suit.max,
 }
 -- }}}
 
@@ -115,14 +113,14 @@ markup      = lain.util.markup
 
 -- Textclock
 clockicon = wibox.widget.imagebox(beautiful.widget_clock)
-mytextclock = awful.widget.textclock(markup("#7788af", "%A %d %B ") .. markup("#343639", ">") .. markup("#de5e1e", " %H:%M "))
+mytextclock = awful.widget.textclock(markup("#7788af", "%A %d %B ") .. markup("#343639", ">") .. markup("#de5e1e", " %I:%M %p "))
 
 -- Calendar
 lain.widgets.calendar:attach(mytextclock, { font_size = 10 })
 
 -- Weather
 weathericon = wibox.widget.imagebox(beautiful.widget_weather)
-yawn = lain.widgets.yawn(123456, {
+yawn = lain.widgets.yawn(29216894, {
     settings = function()
         widget:set_markup(markup("#eca4c4", forecast:lower() .. " @ " .. units .. "°C "))
     end
@@ -404,22 +402,6 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey }, "Escape", awful.tag.history.restore),
 
-    -- Non-empty tag browsing
-    awful.key({ altkey }, "Left", function () lain.util.tag_view_nonempty(-1) end),
-    awful.key({ altkey }, "Right", function () lain.util.tag_view_nonempty(1) end),
-
-    -- Default client focus
-    awful.key({ altkey }, "k",
-        function ()
-            awful.client.focus.byidx( 1)
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ altkey }, "j",
-        function ()
-            awful.client.focus.byidx(-1)
-            if client.focus then client.focus:raise() end
-        end),
-
     -- By direction client focus
     awful.key({ modkey }, "j",
         function()
@@ -539,7 +521,6 @@ globalkeys = awful.util.table.join(
 
     -- User programs
     awful.key({ modkey }, "q", function () awful.util.spawn(browser) end),
-    awful.key({ modkey }, "i", function () awful.util.spawn(browser2) end),
     awful.key({ modkey }, "s", function () awful.util.spawn(gui_editor) end),
     awful.key({ modkey }, "g", function () awful.util.spawn(graphics) end),
 
@@ -551,7 +532,31 @@ globalkeys = awful.util.table.join(
                   mypromptbox[mouse.screen].widget,
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
-              end)
+              end),
+    -- PLay
+    awful.key({ }, "XF86AudioPlay", function () awful.util.spawn_with_shell("mpc toggle") end),
+    awful.key({ }, "XF86AudioNext", function () awful.util.spawn_with_shell("mpc next") end),
+    awful.key({ }, "XF86AudioPrev", function () awful.util.spawn_with_shell("mpc prev") end),
+
+    -- Brightness
+    awful.key({ }, "XF86MonBrightnessDown", function () awful.util.spawn_with_shell("xbacklight -dec 5") end),
+    awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn_with_shell("xbacklight -inc 10") end),
+
+    -- Volume control
+    awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer -q set Master toggle") end),
+    awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer -q set Master 2dB-") end),
+    awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer -q set Master 2dB+") end),
+
+    -- Display
+    awful.key({ }, "XF86Display", function () awful.util.spawn("xrandr --output VGA1 --mode 1920x1080 --right-of LVDS1") end),
+    awful.key({ modkey,           }, "XF86Display", function () awful.util.spawn("xrandr --output VGA1 --off ") end),
+
+    -- Lock
+    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -l") end),
+
+    -- Shutdown
+    awful.key({ modkey, "Control" }, "s", function () awful.util.spawn("gksudo 'shutdown -h 00'") end)
+
 )
 
 clientkeys = awful.util.table.join(
@@ -630,7 +635,7 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons,
 	                   size_hints_honor = false } },
-    { rule = { class = "URxvt" },
+    { rule = { class = "gnome-terminal" },
           properties = { opacity = 0.99 } },
 
     { rule = { class = "MPlayer" },
@@ -644,13 +649,6 @@ awful.rules.rules = {
 
     { rule = { instance = "plugin-container" },
           properties = { tag = tags[1][1] } },
-
-	  { rule = { class = "Gimp" },
-     	    properties = { tag = tags[1][4] } },
-
-    { rule = { class = "Gimp", role = "gimp-image-window" },
-          properties = { maximized_horizontal = true,
-                         maximized_vertical = true } },
 }
 -- }}}
 
