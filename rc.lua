@@ -16,6 +16,7 @@ local beautiful = require("beautiful")
 local naughty   = require("naughty")
 local drop      = require("scratchdrop")
 local lain      = require("lain")
+local newtimer     = require("lain.helpers").newtimer
 -- }}}
 
 -- {{{ Error handling
@@ -102,6 +103,7 @@ if beautiful.wallpaper then
         gears.wallpaper.maximized(beautiful.wallpaper, s, true)
     end
 end
+
 -- }}}
 
 -- {{{ Freedesktop Menu
@@ -709,3 +711,22 @@ for s = 1, screen.count() do screen[s]:connect_signal("arrange", function ()
       end)
 end
 -- }}}
+
+local wallpaperIndex = 1
+-- TODO: Read wallpapers from dir
+local wallpaperdir = os.getenv("HOME") .. "/.config/awesome/wallpapers/"
+local wallpapers = {
+	 'wall1.png',
+	 'wall2.png',
+	 'wall3.jpg',
+}
+
+function changeWallpaper()
+	if wallpaperIndex > #wallpapers then
+		wallpaperIndex = 1
+	end
+	gears.wallpaper.maximized(wallpaperdir .. wallpapers[wallpaperIndex], 1, true)
+	wallpaperIndex = wallpaperIndex + 1
+end
+
+newtimer("changeWallpaper", 30, changeWallpaper)
