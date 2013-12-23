@@ -721,11 +721,15 @@ local wallpapers = {
 	 'wall3.jpg',
 }
 
+run_once('xbacklight -set 20')
+
 function changeWallpaper()
 	if wallpaperIndex > #wallpapers then
 		wallpaperIndex = 1
 	end
-	gears.wallpaper.maximized(wallpaperdir .. wallpapers[wallpaperIndex], 1, true)
+	for s = 1, screen.count() do
+		gears.wallpaper.maximized(wallpaperdir .. wallpapers[wallpaperIndex], s, true)
+	end
 	wallpaperIndex = wallpaperIndex + 1
 end
 
