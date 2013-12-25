@@ -51,7 +51,6 @@ function run_once(cmd)
 end
 
 run_once('xbacklight -set 20')
-run_once('xscreensaver -no-splash &')
 -- }}}
 
 -- {{{ Variable definitions
@@ -582,7 +581,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "XF86Display", function () awful.util.spawn("xrandr --output VGA1 --off ") end),
 
     -- Lock
-    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -l") end),
+    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slock") end),
 
     -- Shutdown
     awful.key({ modkey, "Control" }, "s", function () awful.util.spawn("gksudo 'shutdown -h 00'") end)
