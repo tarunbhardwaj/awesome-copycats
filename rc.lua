@@ -50,6 +50,8 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
+run_once('xbacklight -set 20')
+run_once('xscreensaver -no-splash &')
 -- }}}
 
 -- {{{ Variable definitions
@@ -105,6 +107,30 @@ if beautiful.wallpaper then
 end
 
 -- }}}
+
+-- {{{ Wallpaper Autochanger TODO: Read walls from dir
+
+local wallpaperIndex = 1
+local wallpaperdir = os.getenv("HOME") .. "/.config/awesome/wallpapers/"  -- Walls dir
+local wallpapers = {
+	 'wall1.png',
+	 'wall2.png',
+	 'wall3.jpg',
+}
+
+function changeWallpaper()
+	if wallpaperIndex > #wallpapers then
+		wallpaperIndex = 1
+	end
+	for s = 1, screen.count() do
+		gears.wallpaper.maximized(wallpaperdir .. wallpapers[wallpaperIndex], s, true)
+	end
+	wallpaperIndex = wallpaperIndex + 1
+end
+
+newtimer("changeWallpaper", 30, changeWallpaper)
+-- }}}
+
 
 -- {{{ Freedesktop Menu
 require("freedesktop/freedesktop")
@@ -711,26 +737,3 @@ for s = 1, screen.count() do screen[s]:connect_signal("arrange", function ()
       end)
 end
 -- }}}
-
-local wallpaperIndex = 1
--- TODO: Read wallpapers from dir
-local wallpaperdir = os.getenv("HOME") .. "/.config/awesome/wallpapers/"
-local wallpapers = {
-	 'wall1.png',
-	 'wall2.png',
-	 'wall3.jpg',
-}
-
-run_once('xbacklight -set 20')
-
-function changeWallpaper()
-	if wallpaperIndex > #wallpapers then
-		wallpaperIndex = 1
-	end
-	for s = 1, screen.count() do
-		gears.wallpaper.maximized(wallpaperdir .. wallpapers[wallpaperIndex], s, true)
-	end
-	wallpaperIndex = wallpaperIndex + 1
-end
-
-newtimer("changeWallpaper", 30, changeWallpaper)
